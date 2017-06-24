@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/strugee/node-serve-random/issues"
   },
-  "homepage": "https://github.com/strugee/node-serve-random#readme"
+  "homepage": "https://github.com/strugee/node-serve-random#readme",
+  "dependencies": {
+    "send": "^0.15.3"
+  }
 }
