@@ -18,18 +18,29 @@
 var vows = require('perjury'),
     assert = vows.assert,
     http = require('http'),
-    path = require('path');
+    path = require('path'),
+    url = require('url'),
+    fs = require('fs');
 
-function getRequest(path) {
+function getRequest(port, path) {
+	if (!path) {
+		path = port;
+		port = 8513;
+	}
+
 	return function() {
 		var cb = this.callback,
-		    req = http.get('http://localhost:8513' + path);
+		    req = http.get('http://localhost:' + port + path);
 
 		req.on('error', cb);
 		req.on('response', function(res) {
 			res.on('readable', cb.bind(undefined, undefined, res));
 		});
 	};
+}
+
+function didntCallNext(err, res) {
+	assert.equal(res.headers['x-next-fn-called'], 'false');
 }
 
 vows.describe('serve-random module').addBatch({
@@ -53,6 +64,7 @@ vows.describe('serve-random module').addBatch({
 				    middleware = mod(path.join(__dirname, 'testdata'));
 
 				var server = http.createServer(function(req, res) {
+					res.setHeader('X-Next-Fn-Called', 'false');
 					middleware(req, res, function() {
 						res.setHeader('X-Next-Fn-Called', 'true');
 						res.end();
@@ -78,6 +90,7 @@ vows.describe('serve-random module').addBatch({
 				'it returns the first file': function(err, res) {
 					assert.equal(res.read().toString(), 'file1\n');
 				},
+				'it didn\'t call next()': didntCallNext,
 				'and we make a GET request to /path': {
 					topic: getRequest('/path'),
 					'it works': function(err, res) {
@@ -87,6 +100,7 @@ vows.describe('serve-random module').addBatch({
 					'it returns the second file': function(err, res) {
 						assert.equal(res.read().toString(), 'file2\n');
 					},
+					'it didn\'t call next()': didntCallNext,
 					'and we make a GET request to /path/subpath': {
 						topic: getRequest('/path/subpath'),
 						'it works': function(err, res) {
@@ -95,8 +109,167 @@ vows.describe('serve-random module').addBatch({
 						},
 						'it returns the first file': function(err, res) {
 							assert.equal(res.read().toString(), 'file1\n');
-						}
+						},
+						'it didn\'t call next()': didntCallNext
 					}
+				}
+			},
+			'and we make a POST request': {
+				topic: function() {
+					var cb = this.callback,
+					    reqUrl = url.parse('http://localhost:8513');
+
+					reqUrl.method = 'POST';
+
+					var req = http.request(reqUrl);
+
+					req.on('error', cb);
+					req.on('response', function(res) {
+						res.on('readable', cb.bind(undefined, undefined, res));
+					});
+
+					req.end();
+				},
+				'it works': function(err, res) {
+					assert.ifError(err);
+					assert.equal(res.statusCode, 200);
+				},
+				'it called next()': function(err, res) {
+					assert.equal(res.headers['x-next-fn-called'], 'true');
+				}
+			}
+		},
+		'and we mount it without fallthrough enabled on an HTTP server': {
+			topic: function(mod) {
+				var cb = this.callback,
+				    middleware = mod(path.join(__dirname, 'testdata'), {
+					    fallthrough: false
+				    });
+
+				var server = http.createServer(function(req, res) {
+					res.setHeader('X-Next-Fn-Called', 'false');
+					middleware(req, res, function() {
+						res.setHeader('X-Next-Fn-Called', 'true');
+						res.end();
+					});
+				});
+
+				server.listen(8514, function(err) {
+					cb(err, server);
+				});
+			},
+			teardown: function(server) {
+				server.close(this.callback);
+			},
+			'it works': function(err) {
+				assert.ifError(err);
+			},
+			'and we make a POST request': {
+				topic: function() {
+					var cb = this.callback,
+					    reqUrl = url.parse('http://localhost:8514');
+
+					reqUrl.method = 'POST';
+					
+					var req = http.request(reqUrl);
+
+					req.on('error', cb);
+					req.on('response', function(res) {
+						res.on('readable', cb.bind(undefined, undefined, res));
+					});
+
+					req.end();
+				},
+				'it works': function(err) {
+					assert.ifError(err);
+				},
+				'it returns 405 Method Not Allowed': function(err, res) {
+					assert.equal(res.statusCode, 405);
+				},
+				'it returns the right headers': function(err, res) {
+					assert.equal(res.headers['allow'], 'GET, HEAD');
+					assert.equal(res.headers['content-length'], '0');
+				},
+				'it didn\'t call next()': didntCallNext
+			}
+		},
+		'and we doom it to ENOENT errors and mount it on an HTTP server': {
+			topic: function(mod) {
+				var cb = this.callback,
+				    middleware = mod('/nonexistant');
+
+				var server = http.createServer(function(req, res) {
+					res.setHeader('X-Next-Fn-Called', 'false');
+					middleware(req, res, function(err) {
+						res.setHeader('X-Next-Fn-Called', 'true');
+						if (err) res.setHeader('X-Next-Fn-Err', err.message);
+						res.end();
+					});
+				});
+
+				server.listen(8515, function(err) {
+					cb(err, server);
+				});
+			},
+			teardown: function(server) {
+				server.close(this.callback);
+			},
+			'it works': function(err) {
+				assert.ifError(err);
+			},
+			'and we make a GET request': {
+				topic: getRequest(8515, '/'),
+				'it works': function(err) {
+					assert.ifError(err);
+				},
+				'it called next() with the right error': function(err, res) {
+					assert.equal(res.headers['x-next-fn-called'], 'true');
+					assert.isString(res.headers['x-next-fn-err']);
+					assert.isTrue(res.headers['x-next-fn-err'].includes('ENOENT'));
+				}
+			}
+		},
+		'and we give it an empty directory and mount it on an HTTP server': {
+			topic: function(mod) {
+				var cb = this.callback,
+				    dir = path.join(__dirname, 'empty'),
+				    middleware = mod(dir);
+
+				fs.mkdir(dir, function(err) {
+					if (err && err.code != 'EEXIST') {
+						cb(err);
+						return;
+					}
+
+					var server = http.createServer(function(req, res) {
+						res.setHeader('X-Next-Fn-Called', 'false');
+						middleware(req, res, function(err) {
+							res.setHeader('X-Next-Fn-Called', 'true');
+							if (err) res.setHeader('X-Next-Fn-Err', err.message);
+							res.end();
+						});
+					});
+
+					server.listen(8516, function(err) {
+						cb(err, server);
+					});
+				});
+			},
+			teardown: function(server) {
+				server.close(this.callback);
+			},
+			'it works': function(err) {
+				assert.ifError(err);
+			},
+			// TODO this get request mucks with the Math.random stub
+			'and we make a GET request': {
+				topic: getRequest(8516, '/'),
+				'it works': function(err) {
+					assert.ifError(err);
+				},
+				'it called next() without an error': function(err, res) {
+					assert.equal(res.headers['x-next-fn-called'], 'true');
+					assert.isUndefined(res.headers['x-next-fn-err']);
 				}
 			}
 		},
