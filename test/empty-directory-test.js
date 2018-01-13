@@ -38,6 +38,10 @@ function getRequest(port, path) {
 	};
 }
 
+function didntCallNext(err, res) {
+	assert.equal(res.headers['x-next-fn-called'], 'false');
+}
+
 vows.describe('empty directory handling').addBatch({
 	'When we require the module': {
 		topic: function() {
@@ -67,7 +71,7 @@ vows.describe('empty directory handling').addBatch({
 						});
 					});
 
-					server.listen(8516, function(err) {
+					server.listen(8515, function(err) {
 						cb(err, server);
 					});
 				});
@@ -80,7 +84,7 @@ vows.describe('empty directory handling').addBatch({
 			},
 			// TODO this get request mucks with the Math.random stub
 			'and we make a GET request': {
-				topic: getRequest(8516, '/'),
+				topic: getRequest(8515, '/'),
 				'it works': function(err) {
 					assert.ifError(err);
 				},
@@ -88,6 +92,51 @@ vows.describe('empty directory handling').addBatch({
 					assert.equal(res.headers['x-next-fn-called'], 'true');
 					assert.isUndefined(res.headers['x-next-fn-err']);
 				}
+			}
+		},
+		'and we give it an empty directory and disable fallthrough and mount it on an HTTP server': {
+			topic: function(mod) {
+				var cb = this.callback,
+				    dir = path.join(__dirname, 'empty'),
+				    middleware = mod(dir, {
+					    fallthrough: false
+				    });
+
+				fs.mkdir(dir, function(err) {
+					if (err && err.code != 'EEXIST') {
+						cb(err);
+						return;
+					}
+
+					var server = http.createServer(function(req, res) {
+						res.setHeader('X-Next-Fn-Called', 'false');
+						middleware(req, res, function(err) {
+							res.setHeader('X-Next-Fn-Called', 'true');
+							if (err) res.setHeader('X-Next-Fn-Err', err.message);
+							res.end();
+						});
+					});
+
+					server.listen(8516, function(err) {
+						cb(err, server);
+					});
+				});
+			},
+			teardown: function(server) {
+				server.close(this.callback);
+			},
+			'it works': function(err) {
+				assert.ifError(err);
+			},
+			'and we make a GET request': {
+				topic: getRequest(8516, '/'),
+				'it works': function(err) {
+					assert.ifError(err);
+				},
+				'it returns 404 Not Found': function(err, res) {
+					assert.equal(res.statusCode, 404);
+				},
+				'it didn\'t call next()': didntCallNext
 			}
 		}
 	}
