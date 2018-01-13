@@ -21,6 +21,7 @@ var resolve = require('path').resolve,
 
 module.exports = function serveRandom(root, opts) {
 	opts = Object.create(opts || null);
+
 	var fallthrough = opts.fallthrough || true;
 
 	if (!root) {
@@ -68,4 +69,4 @@ module.exports = function serveRandom(root, opts) {
 			stream.pipe(res);
 		});
 	};
-}
+};
