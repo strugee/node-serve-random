@@ -1,6 +1,6 @@
 {
   "name": "serve-random",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Serve random files",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/strugee/node-serve-random#readme",
   "dependencies": {
-
     "lodash.defaults": "^4.2.0",
     "send": "^0.16.1"
   },
