@@ -4,7 +4,7 @@
   "description": "Serve random files",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc -r text -r lcov perjury test.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,10 @@
   "homepage": "https://github.com/strugee/node-serve-random#readme",
   "dependencies": {
     "send": "^0.15.3"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "nyc": "^11.4.1",
+    "perjury": "^1.1.0"
   }
 }
