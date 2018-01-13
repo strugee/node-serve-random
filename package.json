@@ -1,10 +1,10 @@
 {
   "name": "serve-random",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Serve random files",
   "main": "index.js",
   "scripts": {
-    "test": "nyc -r text -r lcov perjury test.js"
+    "test": "nyc -r text -r lcov perjury test/*-test.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/strugee/node-serve-random#readme",
   "dependencies": {
+
+    "lodash.defaults": "^4.2.0",
     "send": "^0.16.1"
   },
   "devDependencies": {

@@ -17,11 +17,13 @@
 
 var resolve = require('path').resolve,
     fs = require('fs'),
-    send = require('send');
+    send = require('send'),
+    defaults = require('lodash.defaults');
 
 module.exports = function serveRandom(root, opts) {
-	var opts = Object.create(opts || null),
-	    fallthrough = opts.fallthrough || true;
+	opts = defaults({}, opts, {
+		fallthrough: true
+	});
 
 	if (!root) {
 		throw new TypeError('root path required');
@@ -33,7 +35,7 @@ module.exports = function serveRandom(root, opts) {
 
 	return function serveStatic(req, res, next) {
 		if (req.method !== 'GET' && req.method !== 'HEAD') {
-			if (fallthrough) {
+			if (opts.fallthrough) {
 				next();
 				return;
 			}
@@ -47,10 +49,27 @@ module.exports = function serveRandom(root, opts) {
 		}
 
 		fs.readdir(root, function(err, files) {
+			if (err) {
+				next(err);
+				return;
+			}
+
 			var path = files.filter(function(name) {
 				return name[0] !== '.';
 			// https://stackoverflow.com/a/4550514/1198896
 			})[Math.floor(Math.random() * files.length)];
+
+			if (!path) {
+				// Directory was empty
+				if (opts.fallthrough) {
+					next();
+					return;
+				}				
+
+				res.statusCode = 404;
+				res.end();
+				return;
+			}
 
 			var stream = send(req, path, {
 				maxAge: 0,
@@ -68,4 +87,4 @@ module.exports = function serveRandom(root, opts) {
 			stream.pipe(res);
 		});
 	};
-}
+};
