@@ -82,7 +82,6 @@ vows.describe('empty directory handling').addBatch({
 			'it works': function(err) {
 				assert.ifError(err);
 			},
-			// TODO this get request mucks with the Math.random stub
 			'and we make a GET request': {
 				topic: getRequest(8515, '/'),
 				'it works': function(err) {
