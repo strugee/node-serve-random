@@ -39,15 +39,8 @@ function getRequest(port, path) {
 }
 
 vows.describe('empty directory handling').addBatch({
-	'When we require the module and muck with Math.random()': {
+	'When we require the module': {
 		topic: function() {
-			var lower = false;
-			Math.random = function() {
-				lower = !lower;
-				if (lower) return 0.4;
-				return 0.6;
-			};
-
 			return require('../index.js');
 		},
 		'it works': function(err, mod) {
