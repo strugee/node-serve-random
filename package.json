@@ -4,7 +4,7 @@
   "description": "Serve random files",
   "main": "index.js",
   "scripts": {
-    "test": "nyc -r text -r lcov perjury test.js"
+    "test": "nyc -r text -r lcov perjury test/*-test.js"
   },
   "repository": {
     "type": "git",
