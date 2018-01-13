@@ -20,7 +20,7 @@ The response's max-age is always set to 0.
 
 ##### fallthrough
 
-Set the middleware to have client errors (mostly just use of an HTTP method other than `GET` or `HEAD`) fall-through as just unhandled requests, otherwise forward a client error. The difference is that client errors will cause this middleware to simply `next()` to your next middleware when this value is `true`. When this value is `false`, these errors (even 404s), will invoke `next(err)`.
+Set the middleware to have errors (clients using an HTTP method other than `GET` or `HEAD`, or `root` being empty) fall-through as just unhandled requests, otherwise forward a client error. The difference is that client errors will cause this middleware to simply `next()` to your next middleware when this value is `true`. When this value is `false`, these errors (even 404s), will invoke `next(err)`.
 
 Defaults to `true`.
 

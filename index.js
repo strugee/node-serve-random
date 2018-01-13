@@ -58,6 +58,18 @@ module.exports = function serveRandom(root, opts) {
 			// https://stackoverflow.com/a/4550514/1198896
 			})[Math.floor(Math.random() * files.length)];
 
+			if (!path) {
+				// Directory was empty
+				if (opts.fallthrough) {
+					next();
+					return;
+				}				
+
+				res.statusCode = 404;
+				res.end();
+				return;
+			}
+
 			var stream = send(req, path, {
 				maxAge: 0,
 				root: resolve(root),
