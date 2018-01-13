@@ -20,8 +20,8 @@ var resolve = require('path').resolve,
     send = require('send');
 
 module.exports = function serveRandom(root, opts) {
-	var opts = Object.create(opts || null),
-	    fallthrough = opts.fallthrough || true;
+	opts = Object.create(opts || null);
+	var fallthrough = opts.fallthrough || true;
 
 	if (!root) {
 		throw new TypeError('root path required');
