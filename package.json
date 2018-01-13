@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/strugee/node-serve-random#readme",
   "dependencies": {
-    "send": "^0.15.3"
+    "send": "^0.16.1"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
