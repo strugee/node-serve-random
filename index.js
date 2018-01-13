@@ -48,6 +48,11 @@ module.exports = function serveRandom(root, opts) {
 		}
 
 		fs.readdir(root, function(err, files) {
+			if (err) {
+				next(err);
+				return;
+			}
+
 			var path = files.filter(function(name) {
 				return name[0] !== '.';
 			// https://stackoverflow.com/a/4550514/1198896
