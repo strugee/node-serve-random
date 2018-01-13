@@ -39,6 +39,7 @@ module.exports = function serveRandom(root, opts) {
 				next();
 				return;
 			}
+
 			// Method not allowed
 			res.statusCode = 405;
 			res.setHeader('Allow', 'GET, HEAD');
