@@ -1,8 +1,8 @@
 # node-serve-random
 
-[![Build Status](https://travis-ci.org/strugee/node-serve-random.svg?branch=master)](http://travis-ci.org/strugee/serve-random)
-[![Coverage Status](https://coveralls.io/repos/github/strugee/serve-random/badge.svg?branch=master)](https://coveralls.io/github/strugee/serve-random?branch=master)
-[![Greenkeeper badge](https://badges.greenkeeper.io/strugee/serve-random.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/strugee/node-serve-random.svg?branch=master)](http://travis-ci.org/strugee/node-serve-random)
+[![Coverage Status](https://coveralls.io/repos/github/strugee/node-serve-random/badge.svg?branch=master)](https://coveralls.io/github/strugee/node-serve-random?branch=master)
+[![Greenkeeper badge](https://badges.greenkeeper.io/strugee/node-serve-random.svg)](https://greenkeeper.io/)
 
 Serve random files
 
