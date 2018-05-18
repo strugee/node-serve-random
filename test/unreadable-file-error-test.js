@@ -57,7 +57,11 @@ vows.describe('file read error handling').addBatch({
 				});
 			},
 			teardown: function(server) {
-				server.close(this.callback);
+				var cb = this.callback;
+				fs.chmod(path.join(__dirname, 'eacces', 'unreadable.txt'), 0o644, function(err) {
+					if (err) cb(err);
+					server.close(cb);
+				});
 			},
 			'it works': function(err) {
 				assert.ifError(err);

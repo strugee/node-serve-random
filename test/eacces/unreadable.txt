@@ -1,1 +1,1 @@
-this will give permission denied
+This will give permission denied during the tests. It's reset in a teardown because otherwise `git status` gets annoying.
