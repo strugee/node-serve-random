@@ -79,7 +79,7 @@ module.exports = function serveRandom(root, opts) {
 			});
 
 			// Forward errors
-			stream.on('error', function error (err) {
+			stream.on('error', function error(err) {
 				next(err);
 				return;
 			});
