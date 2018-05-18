@@ -36,7 +36,7 @@ function getRequest(port, path) {
 	};
 }
 
-vows.describe('serve-random module').addBatch({
+vows.describe('directory read error handling').addBatch({
 	'When we require the module and muck with Math.random()': {
 		topic: function() {
 			var lower = false;
