@@ -17,24 +17,8 @@
 
 var vows = require('perjury'),
     assert = vows.assert,
-    http = require('http');
-
-function getRequest(port, path) {
-	if (!path) {
-		path = port;
-		port = 8513;
-	}
-
-	return function() {
-		var cb = this.callback,
-		    req = http.get('http://localhost:' + port + path);
-
-		req.on('error', cb);
-		req.on('response', function(res) {
-			res.on('readable', cb.bind(undefined, undefined, res));
-		});
-	};
-}
+    http = require('http'),
+    getRequest = require('./lib/getrequest');
 
 vows.describe('directory read error handling').addBatch({
 	'When we require the module and muck with Math.random()': {

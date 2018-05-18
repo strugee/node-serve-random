@@ -19,28 +19,8 @@ var vows = require('perjury'),
     assert = vows.assert,
     http = require('http'),
     path = require('path'),
-    fs = require('fs');
-
-function getRequest(port, path) {
-	if (!path) {
-		path = port;
-		port = 8513;
-	}
-
-	return function() {
-		var cb = this.callback,
-		    req = http.get('http://localhost:' + port + path);
-
-		req.on('error', cb);
-		req.on('response', function(res) {
-			res.on('readable', cb.bind(undefined, undefined, res));
-		});
-	};
-}
-
-function didntCallNext(err, res) {
-	assert.equal(res.headers['x-next-fn-called'], 'false');
-}
+    fs = require('fs'),
+    getRequest = require('./lib/getrequest');
 
 vows.describe('file read error handling').addBatch({
 	'When we require the module': {

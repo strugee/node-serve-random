@@ -19,24 +19,8 @@ var vows = require('perjury'),
     assert = vows.assert,
     http = require('http'),
     path = require('path'),
-    url = require('url');
-
-function getRequest(port, path) {
-	if (!path) {
-		path = port;
-		port = 8513;
-	}
-
-	return function() {
-		var cb = this.callback,
-		    req = http.get('http://localhost:' + port + path);
-
-		req.on('error', cb);
-		req.on('response', function(res) {
-			res.on('readable', cb.bind(undefined, undefined, res));
-		});
-	};
-}
+    url = require('url'),
+    getRequest = require('./lib/getrequest');
 
 function didntCallNext(err, res) {
 	assert.equal(res.headers['x-next-fn-called'], 'false');
