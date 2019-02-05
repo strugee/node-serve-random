@@ -27,9 +27,9 @@
     "send": "^0.16.1"
   },
   "devDependencies": {
-    "coveralls": "^3.0.0",
+    "coveralls": "^3.0.2",
     "nyc": "^13.2.0",
-    "perjury": "^1.1.0"
+    "perjury": "^1.1.4"
   },
   "engine": {
     "node": ">=6"
