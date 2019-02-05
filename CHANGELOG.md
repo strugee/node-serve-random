@@ -1,6 +1,6 @@
-# `spawn-random` change log
+# `serve-random` change log
 
-`spawn-random` follows [Semantic Versioning][1].
+`serve-random` follows [Semantic Versioning][1].
 
 ## 3.0.0 - future
 
