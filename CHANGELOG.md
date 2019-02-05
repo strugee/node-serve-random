@@ -2,6 +2,12 @@
 
 `spawn-random` follows [Semantic Versioning][1].
 
+## 3.0.0 - future
+
+### Breaking
+
+* Drop Node 4 support
+
 ## 2.0.1 - 2018-01-13
 
 ### Security
