@@ -6,7 +6,7 @@
 
 ### Breaking
 
-* Drop Node 4 support
+* Drop Node 4 and Node 6 support
 
 ## 2.0.1 - 2018-01-13
 
