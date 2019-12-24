@@ -4,6 +4,10 @@
 
 ## 3.0.0 - future
 
+### Added
+
+* Support Node 12
+
 ### Breaking
 
 * Drop Node 4 and Node 6 support
