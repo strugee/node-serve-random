@@ -24,7 +24,7 @@
   "homepage": "https://github.com/strugee/node-serve-random#readme",
   "dependencies": {
     "lodash.defaults": "^4.2.0",
-    "send": "^0.17.0"
+    "send": "^0.17.1"
   },
   "devDependencies": {
     "coveralls": "^3.0.2",
