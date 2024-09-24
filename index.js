@@ -64,7 +64,7 @@ module.exports = function serveRandom(root, opts) {
 				if (opts.fallthrough) {
 					next();
 					return;
-				}				
+				}
 
 				res.statusCode = 404;
 				res.end();
